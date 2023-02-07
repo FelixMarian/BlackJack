@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <windows.h>
+#include <conio.h>
 //Define symbols
 #if defined(_WIN32) || defined(__MSDOS__)
 	#define SPADE   "\x06"
@@ -15,9 +17,18 @@
 	#define DIAMOND "\xE2\x99\xA6"
 #endif
 
+//Bold
+#define BOLD_ON  "\e[1m"
+#define BOLD_OFF   "\e[m"
+
+
 #define max_row 14;
 #define max_col 4;
-#define CitimValoare(v) scanf("%d",&v);
+#define Read(v) scanf("%d",&v);
+#define PrintAndRead(m,v) printf(m); scanf("%d",&v);
+#define Wait(v) Sleep(v);
+
+
 
 //Alocating memory for every card
 void AlocateMemory(char **Deck)
@@ -51,6 +62,29 @@ void SpecialNumbers(char *Number, int col)
 		strcpy(Number, "Q");
 	else if (col + 2 == 14)
 		strcpy(Number, "K");
+}
+
+//An simple animation for option 2
+void RefillingAnimation()
+{
+	int i;
+	for (i = 0; i < 3; i++)
+	{
+		printf("\r                                          ");
+		printf("\rThe deck and credits are refilling.");
+		Wait(500);
+		printf("\r                                          ");
+		printf("\rThe deck and credits are refilling..");
+		Wait(500);
+		printf("\r                                          ");
+		printf("\rThe deck and credits are refilling...");
+		Wait(500);
+		printf("\r                                          ");
+	}
+		printf("\rCongratulations! The deck and credits has been succesfully refilled.");
+		Wait(500);
+		printf("\r                                                                      ");
+		printf("\rChoose your option: ");
 }
 
 //Refilling the Deck
@@ -136,24 +170,62 @@ void DeckRefill(char **Deck)
 		}
 }  
 
+//Refilling the Credit with 5000
+int CreditRefill(int *credit)
+{
+	credit = 5000;
+	return credit;
+}
 
+
+void createMenu(int credit)
+{
+	printf("   \n\n              -------------------------------------------------------------------------------------------\n");
+	printf("              |     Options:                                                                            |\n");
+	printf("              |     0. Exit                                                        Credits:             |\n");
+	printf("              |     1. Play                                                          %d               |\n", credit);
+	printf("              |     2. Refill credits and deck                                                          |\n");
+	printf("              -------------------------------------------------------------------------------------------\n\n");
+	printf("Choose your option: ");
+}
 
 int main()
 {
-	int row, col;
+	int row, col, credits=0;
 	char **Deck;
+	char opt;
 	//Alocating memory for all deck
 	Deck = (char **)malloc(4 * 13 * sizeof(char*));
 	AlocateMemory(Deck);
 	DeckRefill(Deck);
-	for (row = 0; row < 4; row++)
+	credits = CreditRefill(credits);
+	//Main menu
+	createMenu(credits);
+	do
 	{
-		for (col = 0; col < 13; col++)
+		scanf("%s", &opt);
+		switch (opt)
 		{
-			printf("%s ", (Deck + row * 13 + col));
+		case '0':
+			free(Deck);
+			exit(0);
+			break;
+		case '1':
+			break;
+		case '2':
+			system("cls");
+			createMenu(credits);
+			RefillingAnimation();
+			credits = CreditRefill(credits);
+			DeckRefill(Deck);
+			system("cls");
+			createMenu(credits);
+			break;
+		default:
+			printf("This option doesn`t exist.\n");
+			break;
 		}
-		printf("\n");
-	}
+	} while (1);
 	system("pause");
 	return 0;
 }
